@@ -1,10 +1,15 @@
 <!DOCTYPE html>
+<!--
+  Solo OKR (独行OKR) · 个人 OKR 管理系统
+  Copyright 2026 Solo OKR
+  Licensed under the Apache License, Version 2.0
+-->
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="light">
-<title>零跑个人OKR · 月度目标管理</title>
+<title>独行OKR · 个人目标管理</title>
 <style>
 /* ============================================================
    清新未来 Fresh Futurism —— 清晨的太空站
@@ -199,9 +204,9 @@ h2{font-size:19px; margin:0 0 4px; letter-spacing:-.015em; font-weight:680}
 .ring-kr:hover .ring-fill, .ring-kr.dragging .ring-fill{filter:drop-shadow(0 0 7px rgba(61,143,208,.38))}
 .ring-knob{fill:#fff; stroke:var(--accent); stroke-width:2.5; opacity:0; transition:opacity .3s var(--ease); filter:drop-shadow(0 2px 4px rgba(14,45,80,.22))}
 .ring-kr:hover .ring-knob, .ring-kr.dragging .ring-knob{opacity:1 !important}
-.ring-center{position:absolute; inset:0; display:flex; align-items:baseline; justify-content:center; gap:1px; pointer-events:none}
+.ring-center{position:absolute; top:0; left:0; width:100%; height:100%; display:flex; align-items:center; justify-content:center; gap:2px; pointer-events:none}
 .ring-center b{font-size:23px; font-weight:720; letter-spacing:-.03em; line-height:1}
-.ring-center span{font-size:11px; color:var(--faint)}
+.ring-center span{font-size:11px; color:var(--faint); transform:translateY(4px)}
 .ring-hint{
   position:absolute; left:50%; bottom:-14px; transform:translate(-50%,3px); white-space:nowrap; z-index:3;
   font-size:10.5px; color:var(--accent-ink); background:rgba(255,255,255,.94); border:1px solid rgba(61,143,208,.2);
@@ -507,9 +512,8 @@ h2{font-size:19px; margin:0 0 4px; letter-spacing:-.015em; font-weight:680}
   <div class="head-inner">
     <div class="head-top">
       <div class="brand-block">
-        <span class="mark" aria-hidden="true"></span>
         <div>
-          <div class="brand">零跑个人OKR <span class="dot">·</span> <span class="brand-lite">月度目标管理</span></div>
+          <div class="brand">独行OKR <span class="dot">·</span> <span class="brand-lite">个人目标管理</span></div>
           <div class="head-sub num" id="periodSub">—</div>
         </div>
       </div>
@@ -720,7 +724,8 @@ t.sheetStubs=true}if(t.type=="array"){t.type="binary";var a=xk(e,t);t.type="arra
 </script>
 <script>
 /* ================= 数据层（KEY 与数据结构保持不变） ================= */
-const KEY = 'lp_okr_v1';
+const KEY = 'solo_okr_v1';
+const LEGACY_KEY = 'lp_okr_v1';
 let data = load();
 
 function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
@@ -754,6 +759,16 @@ function load(){
     if(raw){
       const d = JSON.parse(raw);
       if(d && d.current) return d;
+    }
+    // 迁移旧版存储键的数据，保证老用户数据不丢
+    const legacyRaw = localStorage.getItem(LEGACY_KEY);
+    if(legacyRaw){
+      const d = JSON.parse(legacyRaw);
+      if(d && d.current){
+        localStorage.setItem(KEY, legacyRaw);
+        localStorage.removeItem(LEGACY_KEY);
+        return d;
+      }
     }
   }catch(e){}
   const d = { current: freshCycle(), history: [] };
@@ -1532,7 +1547,7 @@ function exportData(){
   const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = `零跑个人OKR备份-${data.current.period}.json`;
+  a.download = `独行OKR备份-${data.current.period}.json`;
   a.click();
   URL.revokeObjectURL(a.href);
   toast('JSON 已导出');
@@ -1598,7 +1613,7 @@ function exportExcel(){
   const ws3 = XLSX.utils.aoa_to_sheet(aoa3);
   ws3['!cols'] = [{wch:12},{wch:24},{wch:10},{wch:8},{wch:8}];
   XLSX.utils.book_append_sheet(wb, ws3, '历史周期');
-  XLSX.writeFile(wb, `零跑个人OKR-${c.period}.xlsx`);
+  XLSX.writeFile(wb, `独行OKR-${c.period}.xlsx`);
   toast('Excel 已导出');
 }
 function importExcel(ev){

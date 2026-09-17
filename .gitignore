@@ -1,0 +1,14 @@
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# 日志与临时文件
+*.log
+*.tmp
+
+# 个人数据备份（绝不上传：这些是使用者的私有数据）
+独行OKR备份*.json
+独行OKR-*.xlsx
+SoloOKR*.json
+SoloOKR*.xlsx
+*备份*.json
