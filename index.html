@@ -856,7 +856,7 @@ h2{font-size:19px; margin:0 0 4px; letter-spacing:-.015em; font-weight:680}
       <div class="ai-config-actions">
         <button class="btn ghost sm" onclick="testAIConnection()">测试连接</button>
         <span class="ai-status" id="aiTestStatus" role="status"></span>
-        <a class="ai-link" href="docs/ai-api-key.md" target="_blank" rel="noreferrer">申请 API key 教程 →</a>
+        <a class="ai-link" href="https://github.com/Lunasen1/solo-okr/blob/main/docs/ai-api-key.md" target="_blank" rel="noreferrer">申请 API key 教程 →</a>
       </div>
     </div>
 
@@ -1047,7 +1047,7 @@ async function testAIConnection(){
   saveAIConfig();
   setAIStatus('连接中…', 'loading');
   try{
-    await aiChat([{ role:'user', content:'测试连接' }], { timeout:20000, max_tokens:1, temperature:0 });
+    await aiChat([{ role:'user', content:'测试连接' }], { timeout:20000, max_tokens:50, temperature:0 });
     setAIStatus('连接成功', 'ok');
   }catch(e){
     setAIStatus(aiErrorText(e), 'err');
@@ -1107,7 +1107,11 @@ async function aiChat(messages, opts){
       throw { code:'HTTP', status:res.status, message:`AI 服务返回错误（HTTP ${res.status}）${detail ? '：' + detail : ''}` };
     }
     const j = await res.json();
-    const content = j && j.choices && j.choices[0] && j.choices[0].message && j.choices[0].message.content;
+    const msg = j && j.choices && j.choices[0] && j.choices[0].message;
+    let content = msg && msg.content;
+    if(typeof content !== 'string' || !content.trim()){
+      content = msg && msg.reasoning_content;
+    }
     if(typeof content !== 'string' || !content.trim()){
       throw { code:'EMPTY', message:'AI 没有返回可用内容，请稍后重试。' };
     }
