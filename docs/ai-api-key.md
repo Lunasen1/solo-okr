@@ -18,6 +18,15 @@ AI 教练直连 OpenAI 兼容的模型服务，默认使用 DeepSeek。你只需
 - API Key 填该服务签发的 key。
 - 模型名填服务支持的模型 ID。
 
+常见国内服务（OpenAI 兼容）速查：
+
+| 服务商 | Base URL | 模型名示例 |
+|---|---|---|
+| DeepSeek | `https://api.deepseek.com` | `deepseek-v4-pro` / `deepseek-flash` |
+| Kimi（月之暗面） | `https://api.moonshot.cn/v1` | `moonshot-v1-8k` |
+| 智谱 GLM | `https://open.bigmodel.cn/api/paas/v4` | `glm-4-plus` |
+| 通义千问 | `https://dashscope.aliyuncs.com/compatible-mode/v1` | `qwen-plus` |
+
 ## 常见问题
 
 - **提示「API key 无效或已过期（401）」**：检查 key 是否复制完整、是否仍有效、是否对应正确的服务商。
